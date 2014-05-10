@@ -33,8 +33,12 @@ static const char copyright[] =
  All rights reserved.\n";
 #endif
 #endif /* not lint */
-
+/*
 #include <sys/cdefs.h>
+*/
+
+#define __FBSDID(x)
+
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/main.c 241720 2012-10-19 05:43:38Z ed $");
 
 /*
@@ -53,13 +57,18 @@ __FBSDID("$FreeBSD: release/10.0.0/bin/ed/main.c 241720 2012-10-19 05:43:38Z ed 
  *
  */
 
+/*
 #include <sys/types.h>
-
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+*/
+
 #include <ctype.h>
+
 #include <locale.h>
+/*
 #include <pwd.h>
+ */
 #include <setjmp.h>
 
 #include "ed.h"
