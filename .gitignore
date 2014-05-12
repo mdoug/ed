@@ -1,0 +1,11 @@
+# Writing a .gitignore with the migthy ed!
+
+# Binaries
+*.obj
+*.exe
+*.pdb
+*.dll
+
+#don't know what this thing is, I think it's from the vs debugger
+ed.ilk
+*.suo

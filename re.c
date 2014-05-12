@@ -26,8 +26,12 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WIN32
+
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/re.c 252374 2013-06-29 15:49:26Z kientzle $");
+
+#endif 
 
 #include "ed.h"
 
@@ -35,6 +39,7 @@ const char *errmsg = "";
 
 /* get_compiled_pattern: return pointer to compiled pattern from command
    buffer */
+
 pattern_t *
 get_compiled_pattern(void)
 {
@@ -54,6 +59,7 @@ get_compiled_pattern(void)
 		return expr;
 	} else if ((exprs = extract_pattern(delimiter)) == NULL)
 		return NULL;
+
 	/* buffer alloc'd && not reserved */
 	if (expr && !patlock)
 		regfree(expr);

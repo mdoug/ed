@@ -31,12 +31,16 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WIN32	
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/cbc.c 248656 2013-03-23 19:04:57Z jmg $");
 
 #include <sys/types.h>
-#include <errno.h>
 #include <pwd.h>
+
+#endif
+
+#include <errno.h>
 #ifdef DES
 #include <time.h>
 #include <openssl/des.h>

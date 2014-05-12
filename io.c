@@ -25,8 +25,10 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WIN32
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/io.c 241737 2012-10-19 14:49:42Z ed $");
+#endif 
 
 #include "ed.h"
 
@@ -38,14 +40,14 @@ read_file(char *fn, long n)
 	long size;
 
 
-	fp = (*fn == '!') ? popen(fn + 1, "r") : fopen(strip_escapes(fn), "r");
+	fp = (*fn == '!') ? _popen(fn + 1, "r") : fopen(strip_escapes(fn), "r");
 	if (fp == NULL) {
 		fprintf(stderr, "%s: %s\n", fn, strerror(errno));
 		errmsg = "cannot open input file";
 		return ERR;
 	} else if ((size = read_stream(fp, n)) < 0)
 		return ERR;
-	 else if (((*fn == '!') ?  pclose(fp) : fclose(fp)) < 0) {
+	 else if (((*fn == '!') ?  _pclose(fp) : fclose(fp)) < 0) {
 		fprintf(stderr, "%s: %s\n", fn, strerror(errno));
 		errmsg = "cannot close input file";
 		return ERR;
@@ -144,14 +146,14 @@ write_file(char *fn, const char *mode, long n, long m)
 	FILE *fp;
 	long size;
 
-	fp = (*fn == '!') ? popen(fn+1, "w") : fopen(strip_escapes(fn), mode);
+	fp = (*fn == '!') ? _popen(fn+1, "w") : fopen(strip_escapes(fn), mode);
 	if (fp == NULL) {
 		fprintf(stderr, "%s: %s\n", fn, strerror(errno));
 		errmsg = "cannot open output file";
 		return ERR;
 	} else if ((size = write_stream(fp, n, m)) < 0)
 		return ERR;
-	 else if (((*fn == '!') ?  pclose(fp) : fclose(fp)) < 0) {
+	 else if (((*fn == '!') ?  _pclose(fp) : fclose(fp)) < 0) {
 		fprintf(stderr, "%s: %s\n", fn, strerror(errno));
 		errmsg = "cannot close output file";
 		return ERR;

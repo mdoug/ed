@@ -1,0 +1,25 @@
+Notes:
+
+Ignore the BSDMakefile, it is there for reference only.  Instead, use the 
+Makefile, which can be run by nmake.  It is simplest to do this from the
+Visual Studio developers shell, or from a batch script that "call"s the
+script which sets the environmental variables.
+
+The Makefile may have to be edited, to update the location of the regex  
+library.  Currently, Gnu regex is used, avaialable from GnuWin32, see
+Depeendencies.
+
+I think I made some destructive changes, so at this point this should be
+considered a fork of the BSD ed.  The difference is largely academic, since
+upstream lies FreeBSD, who would be unlikely to accept #ifdef WIN32 style
+commits anyway.  
+
+Dependencies:
+
+Currently, the main dependency is gnu regex, everything else has kind of 
+been hobbled together inside of the package.  The FreeBSD regex code has
+been tied to its rune code, which I am not going to try to port.  However,
+the regex code has an earlier form, which is not tied to the runes, which
+is probably worth an attempt at porting.  It has more of a combined zlib
+and BSD style license, which although unusual, should be quite ok.  
+

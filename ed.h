@@ -28,15 +28,18 @@
  * $FreeBSD: release/10.0.0/bin/ed/ed.h 241737 2012-10-19 14:49:42Z ed $
  */
 
-#include <sys/param.h>
+#ifndef WIN32
+#include <sys/param.h> 
+#include <signal.h>
+#include <unistd.h> 
+#endif
+
 #include <errno.h>
 #include <limits.h>
 #include <regex.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #define ERR		(-2)
 #define EMOD		(-3)
@@ -67,7 +70,6 @@ typedef struct	line {
 	int		len;		/* length of line */
 } line_t;
 
-
 typedef struct undo {
 
 /* type of undo nodes */
@@ -91,6 +93,28 @@ typedef struct undo {
 #define INC_MOD(l, k)	((l) + 1 > (k) ? 0 : (l) + 1)
 #define DEC_MOD(l, k)	((l) - 1 < 0 ? (k) : (l) - 1)
 
+/*
+ * I have a bunch of dirty hacks to get this working on Windows.  I will
+ * consider adding in signal suppor later, I noticed that mingw has a
+ * "signals.h" file, so maybe there is something there.  Anyhow, up and running
+ * first, "good" second 
+ */
+#ifdef WIN32 
+
+#define ftello(x) ftell(x)
+#define fseeko(x, y, z) fseek(x, y, z)
+
+#endif
+
+#ifndef HAVE_STRLCPY
+size_t strlcpy(char *dst,const char *src, size_t siz);
+#endif
+
+#ifdef NO_SIGNALS
+#define SPL0()
+#define SPL1()
+
+#else /* NO_SIGNALS */
 /* SPL1: disable some interrupts (requires reliable signals) */
 #define SPL1() mutex++
 
@@ -101,6 +125,8 @@ if (--mutex == 0) { \
 	if (sigflags & (1 << (SIGINT - 1))) handle_int(SIGINT); \
 }
 
+#endif /* NO_SIGNALS */
+
 /* STRTOL: convert a string to long */
 #define STRTOL(i, p) { \
 	if (((i = strtol(p, &p, 10)) == LONG_MIN || i == LONG_MAX) && \
@@ -110,6 +136,7 @@ if (--mutex == 0) { \
 		return ERR; \
 	} \
 }
+
 
 #if defined(sun) || defined(NO_REALLOC_NULL)
 /* REALLOC: assure at least a minimum size for buffer b */

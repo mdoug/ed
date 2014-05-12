@@ -26,12 +26,16 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WIN32
+
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/glbl.c 241720 2012-10-19 05:43:38Z ed $");
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+
+#endif /* WIND32 */
 
 #include "ed.h"
 
@@ -66,7 +70,6 @@ build_active_list(int isgcmd)
 	}
 	return 0;
 }
-
 
 /* exec_global: apply command list in the command buffer to the active
    lines in a range; return command status */

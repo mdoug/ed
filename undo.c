@@ -25,8 +25,12 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WIN32
+
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/undo.c 241720 2012-10-19 05:43:38Z ed $");
+
+#endif
 
 #include "ed.h"
 

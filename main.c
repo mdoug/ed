@@ -1,5 +1,9 @@
+/* Ok, trying to fix this up to run on windows, come hell or high water. */
+
 /* main.c: This file contains the main control and user-interface routines
-   for the ed line editor. */
+ * for the ed line editor. 
+ */
+
 /*-
  * Copyright (c) 1993 Andrew Moore, Talke Studio.
  * All rights reserved.
@@ -33,13 +37,15 @@ static const char copyright[] =
  All rights reserved.\n";
 #endif
 #endif /* not lint */
-/*
+
+
+#ifndef WIN32
 #include <sys/cdefs.h>
-*/
-
-#define __FBSDID(x)
-
 __FBSDID("$FreeBSD: release/10.0.0/bin/ed/main.c 241720 2012-10-19 05:43:38Z ed $");
+#else 
+#include <Windows.h>
+#define PATH_MAX MAX_PATH
+#endif
 
 /*
  * CREDITS
@@ -57,18 +63,19 @@ __FBSDID("$FreeBSD: release/10.0.0/bin/ed/main.c 241720 2012-10-19 05:43:38Z ed 
  *
  */
 
-/*
+#ifndef WIN32
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
-*/
-
-#include <ctype.h>
-
-#include <locale.h>
-/*
 #include <pwd.h>
- */
+#else
+#include "getopt.h"
+#include "progname.h"
+#endif
+
+#include <string.h>
+#include <ctype.h>
+#include <locale.h>
 #include <setjmp.h>
 
 #include "ed.h"
@@ -110,6 +117,9 @@ static const char *dps = "*";	/* default command-line prompt */
 
 static const char *usage = "usage: %s [-] [-sx] [-p string] [file]\n";
 
+
+int cols = 72;				/* wrap column */
+
 /* ed: line editor */
 int
 main(volatile int argc, char ** volatile argv)
@@ -117,6 +127,7 @@ main(volatile int argc, char ** volatile argv)
 	int c, n;
 	long status = 0;
 
+	setprogname(argv[0]);
 	(void)setlocale(LC_ALL, "");
 
 	red = (n = strlen(argv[0])) > 2 && argv[0][n - 3] == 'r';
@@ -153,6 +164,7 @@ top:
 		argc--;
 	}
 	/* assert: reliable signals! */
+#ifndef NO_SIGNALS /* I have a feeling I'm making a mess of this. */
 #ifdef SIGWINCH
 	handle_winch(SIGWINCH);
 	if (isatty(0)) signal(SIGWINCH, handle_winch);
@@ -160,6 +172,9 @@ top:
 	signal(SIGHUP, signal_hup);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, signal_int);
+
+#endif /* NO_SIGNALS*/
+
 #ifdef _POSIX_SOURCE
 	if ((status = sigsetjmp(env, 1)))
 #else
@@ -1337,6 +1352,8 @@ strip_escapes(char *s)
 }
 
 
+#ifndef NO_SIGNALS
+
 void
 signal_hup(int signo)
 {
@@ -1396,7 +1413,6 @@ handle_int(int signo)
 }
 
 
-int cols = 72;				/* wrap column */
 
 void
 handle_winch(int signo)
@@ -1413,6 +1429,7 @@ handle_winch(int signo)
 	errno = save_errno;
 }
 
+#endif /* NO_SIGNALS */
 
 /* is_legal_filename: return a legal filename */
 int
