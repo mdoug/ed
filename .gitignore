@@ -9,3 +9,7 @@
 #don't know what this thing is, I think it's from the vs debugger
 ed.ilk
 *.suo
+
+# test files, no need to clutter up repo
+test.txt
+
