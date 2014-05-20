@@ -5,6 +5,7 @@
 *.exe
 *.pdb
 *.dll
+*.zip
 
 #don't know what this thing is, I think it's from the vs debugger
 ed.ilk
@@ -12,4 +13,10 @@ ed.ilk
 
 # test files, no need to clutter up repo
 test.txt
+
+# LGPL, I need to include this with the binary, since I include
+# regex2.dll along with it.  But it is really long, and not part
+# of the source, so it doesn't have to be in the repo.  
+
+regex_LICENSE
 

@@ -169,8 +169,10 @@ top:
 	handle_winch(SIGWINCH);
 	if (isatty(0)) signal(SIGWINCH, handle_winch);
 #endif
+#ifndef SIGINT_ONLY
 	signal(SIGHUP, signal_hup);
 	signal(SIGQUIT, SIG_IGN);
+#endif /* SIGINT_ONLY */
 	signal(SIGINT, signal_int);
 
 #endif /* NO_SIGNALS*/
@@ -1353,6 +1355,7 @@ strip_escapes(char *s)
 
 
 #ifndef NO_SIGNALS
+#ifndef SIGINT_ONLY
 
 void
 signal_hup(int signo)
@@ -1363,6 +1366,7 @@ signal_hup(int signo)
 		handle_hup(signo);
 }
 
+#endif /* SIGINT_ONLY */
 
 void
 signal_int(int signo)
@@ -1374,6 +1378,7 @@ signal_int(int signo)
 }
 
 
+#ifndef SIGINT_ONLY
 void
 handle_hup(int signo)
 {
@@ -1398,6 +1403,7 @@ handle_hup(int signo)
 	quit(2);
 }
 
+#endif /* SIGINT_ONLY */
 
 void
 handle_int(int signo)
@@ -1413,6 +1419,7 @@ handle_int(int signo)
 }
 
 
+#ifndef SIGINT_ONLY
 
 void
 handle_winch(int signo)
@@ -1429,6 +1436,7 @@ handle_winch(int signo)
 	errno = save_errno;
 }
 
+#endif /* SIGINT_ONLY */
 #endif /* NO_SIGNALS */
 
 /* is_legal_filename: return a legal filename */
