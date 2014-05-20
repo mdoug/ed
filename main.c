@@ -71,6 +71,8 @@ __FBSDID("$FreeBSD: release/10.0.0/bin/ed/main.c 241720 2012-10-19 05:43:38Z ed 
 #else
 #include "getopt.h"
 #include "progname.h"
+
+BOOL WINAPI windows_handler (DWORD e_type);
 #endif
 
 #include <string.h>
@@ -169,12 +171,12 @@ top:
 	handle_winch(SIGWINCH);
 	if (isatty(0)) signal(SIGWINCH, handle_winch);
 #endif
-#ifndef SIGINT_ONLY
 	signal(SIGHUP, signal_hup);
 	signal(SIGQUIT, SIG_IGN);
-#endif /* SIGINT_ONLY */
 	signal(SIGINT, signal_int);
 
+#elif defined WIN32
+	SetConsoleCtrlHandler(windows_handler, TRUE);
 #endif /* NO_SIGNALS*/
 
 #ifdef _POSIX_SOURCE
@@ -1355,7 +1357,6 @@ strip_escapes(char *s)
 
 
 #ifndef NO_SIGNALS
-#ifndef SIGINT_ONLY
 
 void
 signal_hup(int signo)
@@ -1366,7 +1367,6 @@ signal_hup(int signo)
 		handle_hup(signo);
 }
 
-#endif /* SIGINT_ONLY */
 
 void
 signal_int(int signo)
@@ -1378,7 +1378,6 @@ signal_int(int signo)
 }
 
 
-#ifndef SIGINT_ONLY
 void
 handle_hup(int signo)
 {
@@ -1403,7 +1402,6 @@ handle_hup(int signo)
 	quit(2);
 }
 
-#endif /* SIGINT_ONLY */
 
 void
 handle_int(int signo)
@@ -1419,7 +1417,6 @@ handle_int(int signo)
 }
 
 
-#ifndef SIGINT_ONLY
 
 void
 handle_winch(int signo)
@@ -1436,7 +1433,6 @@ handle_winch(int signo)
 	errno = save_errno;
 }
 
-#endif /* SIGINT_ONLY */
 #endif /* NO_SIGNALS */
 
 /* is_legal_filename: return a legal filename */
@@ -1449,3 +1445,46 @@ is_legal_filename(char *s)
 	}
 	return 1;
 }
+
+#ifdef WIN32
+
+/* as it is now, this is handle_hup, only using a backslash on the name.  
+   however, I think I want to add the pid to the file name, to handle
+   the scenario where a lot of windows are closed at once.  However, this
+   should suffice for the time being.  
+*/
+void dump_file (void)
+{
+	char *hup = NULL;		/* hup filename */
+	char *s;
+	char ed_hup[] = "ed.hup";
+	int n;
+
+	if (!sigactive)
+		quit(1);
+	if (addr_last && write_file(ed_hup, "w", 1, addr_last) < 0 &&
+	    (s = getenv("HOME")) != NULL &&
+	    (n = strlen(s)) + 8 <= PATH_MAX &&	/* "ed.hup" + '/' */
+	    (hup = (char *) malloc(n + 10)) != NULL) {
+		strcpy(hup, s);
+		if (hup[n - 1] != '\\')
+			hup[n] = '\\', hup[n+1] = '\0';
+		strcat(hup, "ed.hup");
+		write_file(hup, "w", 1, addr_last);
+	}
+	quit(2);
+}
+BOOL WINAPI windows_handler (DWORD e_type)
+{
+	switch (e_type) {
+	case CTRL_C_EVENT:
+		return TRUE;
+	case CTRL_CLOSE_EVENT:
+		atexit(dump_file);
+		exit(1);
+	default:
+		return FALSE;
+	}
+}
+
+#endif /* WIN32 */

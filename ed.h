@@ -120,18 +120,11 @@ size_t strlcpy(char *dst,const char *src, size_t siz);
 #define SPL1() mutex++
 
 /* SPL0: enable all interrupts; check sigflags (requires reliable signals) */
-#ifndef SIGINT_ONLY
 #define SPL0() \
 if (--mutex == 0) { \
 	if (sigflags & (1 << (SIGHUP - 1))) handle_hup(SIGHUP); \
 	if (sigflags & (1 << (SIGINT - 1))) handle_int(SIGINT); \
 }
-#else /* SIGINT_ONLY */
-#define SPL0() \
-if (--mutex == 0) { \
-	if (sigflags & (1 << (SIGINT - 1))) handle_int(SIGINT); \
-}
-#endif /* SIGINT_ONLY */
 
 #endif /* NO_SIGNALS */
 
