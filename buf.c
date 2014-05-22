@@ -205,7 +205,7 @@ static char sfn[15] = "";		/* scratch file name */
 #ifdef WIN32
 
 #define MAX_TRIES 20
-#define BASE_FILENAME "ed_tmp"
+#define BASE_FILENAME "ed"
 
 static FILE *get_tmp_file(void)
 {
@@ -253,9 +253,10 @@ static FILE *get_tmp_file(void)
 			tmp /= 26;
 		}
 		buf[len] = '\0';
-		if(fp_len + len + 1 >= sizeof(fn_buf))
+		if(fp_len + len + 1 + 4 >= sizeof(fn_buf))
 			return NULL;
 		strcpy(fn_buf + fp_len, buf);
+		strcpy(fn_buf + fp_len + len, ".tmp");
 		return fopen(fn_buf, "w+");
 	}
 

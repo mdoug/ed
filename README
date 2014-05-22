@@ -6,17 +6,21 @@ as it looks.
 Actually, it would appear to be every bit as hard as it looks.  Because of
 this, new signal conditions will be used --
 
-CTRL_C_EVENT is _ignored_.  However, this seems to produce the correct
-behavior, i.e., the program will back out of edit mode, or quit if in
-command mode.  
+CTRL_C_EVENT is _ignored_. However, it seems the application itself still
+will drop out of edit mode, and exit the program, if it is not actively
+doing something else.  Use of CTRL-C is not recommended.
 
-CTRL_CLOSE_EVENT _will_ save on close.  This will be accomplished with a little
-at exit hackery, since again, the problem is that the signal happens in its
-own thread.   However, I must have botched the "path" stuff, because now
-the app will save the hup file in the current directory.  On further
-consideration, this may be the more "Windowsy" behavior anyway, so I
-might just adopt this later on.  I think I might want to mangle with
-process ID, however, in the event of a shutdown.  
+CTRL_CLOSE_EVENT saves to ed.hup on close.  However, there is an odd behavior,
+where if you are in a non writable directory, the file will still
+be saved to the directory.  I do not believe the file is actually in that
+directory, however, since it does not appear in Explorer, and it is not
+in their if you access that directory again with admin privileges.  But the
+file can be read/manipulated by using ed on it, or cat from msys also worked.
+Note, windows utilities do *NOT* see the file -- so cat will work, but type
+will not.  
+
+I'm sure there is a work around for this, using the WIN32 api, but I don't
+need this right now, so it just is what it is for now.  
 
 The following is the original ed README from FreeBSD 10.  
 

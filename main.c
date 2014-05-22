@@ -1459,13 +1459,23 @@ void dump_file (void)
 	char *s;
 	char ed_hup[] = "ed.hup";
 	int n;
+	HANDLE out;
 
 	if (!sigactive)
 		quit(1);
-	if (addr_last && write_file(ed_hup, "w", 1, addr_last) < 0 &&
-	    (s = getenv("HOME")) != NULL &&
-	    (n = strlen(s)) + 8 <= PATH_MAX &&	/* "ed.hup" + '/' */
-	    (hup = (char *) malloc(n + 10)) != NULL) {
+
+	/* had to seperate this out for debugging,
+	   it can stay that way as far as I care.  */
+
+	if (!addr_last)
+		quit(2);
+
+	if (write_file(ed_hup, "w", 1, addr_last) < 0)
+	if ((s = getenv("HOME")) != NULL )
+	if ((n = strlen(s)) + 8 <= PATH_MAX) 
+		/* "ed.hup" + '/' */
+	if ((hup = (char *) malloc(n + 10)) != NULL) {
+		fprintf(stderr, "s: %s\n", s);
 		strcpy(hup, s);
 		if (hup[n - 1] != '\\')
 			hup[n] = '\\', hup[n+1] = '\0';
